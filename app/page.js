@@ -53,7 +53,7 @@ function Result({ run, flagOf }) {
         {img && <img className="pimg" src={img} alt="" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
         <div className="result-body">
           <div className="kicker"><span className="dot" />{h.kicker}</div>
-          <div className="ptitle">{run.product_title ?? run.source_url}</div>
+          <div className="ptitle">{nice(run)}</div>
           {(run.sku || run.source_store) && <div className="pmeta">{run.sku ? `SKU ${run.sku}` : ''}{run.sku && run.source_store ? ' · ' : ''}{run.source_store ? `shared from ${flagOf(run.source_store)} ${run.source_store}` : ''}{run.shared_by ? ` · for ${run.shared_by}` : ''}</div>}
           {filled && saved && (
             <div className="story">
@@ -98,6 +98,14 @@ function replyText(run) {
   if (run.status === 'waiting') return `${hi}Mijn agent houdt "${item}" voor je in de gaten. Beste prijs nu is ${eur(run.best_price)}, hij vult zelf een winkelmandje zodra het onder ${eur(run.target)} zakt.`;
   if (run.status === 'cannot_help') return `${hi}Deze link kan mijn agent (nog) niet aan: hij werkt voor merken met een eigen webshop per land (UGREEN, Anker, eufy, soundcore, Shokz, xTool...), niet voor winkels zoals bol.com of Coolblue. Heb je iets van zo'n merk op het oog? Stuur maar door!`;
   return null;
+}
+
+// A readable title when the agent could not name the product: the words from the link, not the raw address.
+function nice(r) {
+  if (r.product_title) return r.product_title;
+  const u = String(r.source_url ?? '');
+  if (!/^https?:/i.test(u)) return u;
+  try { const x = new URL(u); const seg = x.pathname.split('/').filter((p) => /[a-z]{3}/i.test(p)).sort((a, b) => b.length - a.length)[0] ?? ''; const words = decodeURIComponent(seg).replace(/\.html?$/, '').replace(/[-_+]/g, ' ').split(' ').slice(0, 7).join(' '); return `${words || 'Link'} (${x.hostname.replace('www.', '')})`; } catch { return u.slice(0, 70); }
 }
 
 export default function Home() {
@@ -151,7 +159,7 @@ export default function Home() {
         </div>
         {tot && <div className="counter">
           <span className="stat"><b>{tot.links}</b> links checked</span>
-          {Number(tot.people) > 0 && <span className="stat"><b>{tot.people}</b> {Number(tot.people) === 1 ? 'person' : 'people'} helped</span>}
+          {Number(tot.people) > 0 && <span className="stat"><b>{tot.people}</b> {Number(tot.people) === 1 ? 'person' : 'people'} asked</span>}
           <span className="stat"><b>{tot.helped}</b> cheaper next door</span>
           <span className="stat good"><b>{eur(tot.saved)}</b> found</span>
         </div>}
@@ -219,13 +227,13 @@ export default function Home() {
 
             <section className="card">
               <div className="card-head"><h3>Audit trail: every step, in order</h3><span className="toolrow">{TOOLS.filter((t) => usedTools.includes(t)).map((t) => <span key={t} className={'tool ' + t}>{t}</span>)}</span></div>
-              <ul className="steps">{steps.map((s) => (
-                <li key={s.seq} className={s.status + (open === s.seq ? ' open' : '')} onClick={() => setOpen(open === s.seq ? null : s.seq)}>
+              <ul className="steps">{steps.map((s, si) => (
+                <li key={si} className={s.status + (open === si ? ' open' : '')} onClick={() => setOpen(open === si ? null : si)}>
                   <span className="n">{String(s.seq).padStart(2, '0')}</span>
                   <div className="step-body">
                     <div className="step-line"><span className={'tool ' + s.tool}>{s.tool}</span><code>{s.action}</code><span className="ms">{s.ms} ms</span></div>
                     <div className="sum">{s.summary}</div>
-                    {open === s.seq && <pre onClick={(e) => e.stopPropagation()}>{JSON.stringify(s.detail, null, 2)}</pre>}
+                    {open === si && <pre onClick={(e) => e.stopPropagation()}>{JSON.stringify(s.detail, null, 2)}</pre>}
                   </div>
                 </li>))}</ul>
               <div className="hint">Click a step to see the raw data behind it. Stored in SingleStore, mirrored to Amplitude; lessons go to Cognee.</div>
@@ -237,7 +245,7 @@ export default function Home() {
             <h3>Standing orders</h3><div className="sub">The agent keeps watching</div>
             <ul className="runs">{data.watches.map((w) => (
               <li key={w.id} className={w.last_run_id === sel ? 'on' : ''} onClick={() => w.last_run_id && setSel(w.last_run_id)}>
-                <div className="t">{w.product_title ?? w.source_url}</div>
+                <div className="t">{nice(w)}</div>
                 <div className="s"><span>buy under {eur(w.target)}{w.last_best ? ` · now ${eur(w.last_best)} at ${w.last_store}` : ''}</span><span className={'badge ' + (w.status === 'triggered' ? 'ok' : 'run')}><i />{w.status === 'triggered' ? 'cart filled' : 'watching'}</span></div>
                 <div className="s" onClick={(e) => e.stopPropagation()}><span>{w.checks} checks{w.shared_by ? ` · for ${w.shared_by}` : ''}</span>
                   <span className="mini"><input value={edit[w.id] ?? ''} onChange={(e) => setEdit({ ...edit, [w.id]: e.target.value })} placeholder="new €" /><button className="ghost" onClick={() => edit[w.id] && watch({ id: w.id, target: edit[w.id] }).then(() => setEdit({ ...edit, [w.id]: '' }))}>set</button><button className="ghost" onClick={() => watch({ id: w.id, stop: true })}>stop</button></span></div>
@@ -248,7 +256,7 @@ export default function Home() {
             <ul className="runs scrolly">
               {data.runs.map((r) => (
                 <li key={r.id} className={r.id === sel ? 'on' : ''} onClick={() => setSel(r.id)}>
-                  <div className="t">{r.product_title ?? r.source_url}</div>
+                  <div className="t">{nice(r)}</div>
                   <div className="s"><span>{r.shared_by ? r.shared_by + ' · ' : ''}{r.source_store} {r.status === 'cart_filled' ? `→ ${r.chosen_store}` : ''}</span><span className={'badge ' + CLS[r.status] + (r.status === 'running' ? ' live' : '')}><i />{LABEL[r.status] ?? r.status}{r.status === 'cart_filled' ? ' −' + eur(r.saving) : ''}</span></div>
                 </li>
               ))}
