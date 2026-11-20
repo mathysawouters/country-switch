@@ -8,6 +8,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@amplitude/ai": "^0.33.0",
+    "@amplitude/analytics-node": "^1.5.85",
     "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0"

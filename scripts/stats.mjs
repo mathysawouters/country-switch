@@ -1,0 +1,15 @@
+import { rows } from '../lib/s2.mjs';
+const one = async (sql, a = []) => (await rows(sql, a))[0];
+const p = await one("SELECT COUNT(DISTINCT shared_by) people, COUNT(DISTINCT source_url) requests FROM cs_runs WHERE shared_by IS NOT NULL AND shared_by <> ''");
+const byStatus = await rows("SELECT status, COUNT(DISTINCT source_url) n FROM cs_runs WHERE shared_by IS NOT NULL AND shared_by <> '' GROUP BY status");
+const all = await one("SELECT COUNT(*) runs, COUNT(DISTINCT source_url) links, SUM(status='cart_filled') carts, SUM(status='refused') refused, SUM(status='cannot_help') cannot FROM cs_runs WHERE status <> 'running'");
+const steps = await one('SELECT COUNT(*) steps, COUNT(DISTINCT run_id) runs, ROUND(COUNT(*) / COUNT(DISTINCT run_id), 1) per_run FROM cs_steps');
+const tools = await rows('SELECT tool, COUNT(*) calls, ROUND(AVG(ms)) avg_ms FROM cs_steps GROUP BY tool ORDER BY calls DESC');
+const offers = await one("SELECT COUNT(*) offers, COUNT(DISTINCT store) shops, SUM(decision='not_same_item') lookalikes, SUM(decision='refused') refused_offers, SUM(decision='refused' AND reason LIKE '%no delivery%') no_delivery, SUM(decision='refused' AND reason LIKE '%Priced in%') wrong_currency FROM cs_offers");
+const brands = await one("SELECT COUNT(DISTINCT SUBSTRING_INDEX(store, '.', -2)) brands FROM cs_offers");
+const dur = await rows("SELECT run_id, TIMESTAMPDIFF(SECOND, MIN(ts), MAX(ts)) s FROM cs_steps GROUP BY run_id HAVING COUNT(*) > 8 ORDER BY s");
+const med = dur.length ? dur[Math.floor(dur.length / 2)].s : null;
+const best = await rows("SELECT product_title, source_store, source_price, chosen_store, best_price, saving, ROUND(100 * saving / source_price) pct FROM (SELECT product_title, source_store, source_price, chosen_store, best_price, saving, ROW_NUMBER() OVER (PARTITION BY source_url ORDER BY created DESC) rn FROM cs_runs WHERE status = 'cart_filled' AND gate_same_item = 1 AND saving > 0) t WHERE rn = 1 ORDER BY saving DESC LIMIT 8");
+const gate = await rows("SELECT IF(r.gate_same_item = 1, 'check on', 'check off') mode, COUNT(*) carts, SUM(o.sku <> r.sku) wrong FROM cs_runs r JOIN cs_offers o ON o.run_id = r.id AND o.decision = 'chosen' WHERE r.status = 'cart_filled' AND r.sku IS NOT NULL GROUP BY 1");
+const prices = await one('SELECT COUNT(*) obs, COUNT(DISTINCT sku) skus, COUNT(DISTINCT store) shops FROM cs_prices');
+console.log(JSON.stringify({ friends: p, friends_by_status: byStatus, all, steps, tools, offers, brands, median_run_seconds: med, best, gate, prices }, null, 1));
