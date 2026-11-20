@@ -2,8 +2,8 @@
 import { useEffect, useState, useCallback } from 'react';
 
 const eur = (n) => (n == null ? '' : '€' + Number(n).toFixed(2));
-const LABEL = { cart_filled: 'cart filled', refused: 'refused', running: 'running', error: 'error', waiting: 'waiting for price' };
-const CLS = { cart_filled: 'ok', refused: 'no', running: 'run', error: 'no', waiting: 'run' };
+const LABEL = { cart_filled: 'cart filled', refused: 'refused', running: 'running', error: 'error', waiting: 'waiting for price', cannot_help: 'cannot help' };
+const CLS = { cart_filled: 'ok', refused: 'no', running: 'run', error: 'no', waiting: 'run', cannot_help: 'run' };
 const DEC = { chosen: 'chosen', refused: 'refused by your rule', not_same_item: 'not the same item', source: 'where you were', not_needed: 'not needed', not_cheaper: 'not cheaper' };
 
 const COLORS = ['#0a0a0a', '#0a7a3d', '#b42318', '#6b6b6b', '#8a5a00', '#3b3b9a', '#00707a'];
@@ -25,6 +25,17 @@ function PriceChart({ t }) {
       {Object.entries(stores.reduce((m, s) => { const p = h.filter((x) => x.store === s).pop().price.toFixed(2); (m[p] ||= []).push(s.split('.')[0]); return m; }, {})).map(([p, names]) => <text key={p} x={W - R + 6} y={Y(Number(p)) + 4} fontSize="11" fill={names.includes(t.store.split('.')[0]) ? '#0a7a3d' : '#6b6b6b'} fontWeight={names.includes(t.store.split('.')[0]) ? 700 : 400}>{names.join(', ')} €{p}</text>)}
     </svg>
   );
+}
+
+// A ready-to-send answer for the person who shared the link (Dutch, for friends back home).
+function replyText(run) {
+  const hi = run.shared_by ? `Hey ${run.shared_by}! ` : 'Hey! ';
+  const item = run.product_title ?? 'je product';
+  if (run.status === 'cart_filled') return `${hi}Mijn agent heeft je link nagekeken. "${item}" kost ${eur(run.source_price)} bij ${run.source_store}, maar bij ${run.chosen_store} (zelfde merk, zelfde product) is het ${eur(run.best_price)} geleverd in België. Dat scheelt ${eur(run.saving)}. Winkelmandje staat al klaar, je moet enkel nog betalen: ${run.cart_url}`;
+  if (run.status === 'refused') return `${hi}Mijn agent heeft je link nagekeken in alle landenwinkels van het merk. "${item}" voor ${eur(run.source_price)} bij ${run.source_store} is al de beste keuze: nergens anders is het minstens 5 euro goedkoper mét levering naar België. Gewoon daar kopen dus.`;
+  if (run.status === 'waiting') return `${hi}Mijn agent houdt "${item}" voor je in de gaten. Beste prijs nu is ${eur(run.best_price)}, hij vult zelf een winkelmandje zodra het onder ${eur(run.target)} zakt.`;
+  if (run.status === 'cannot_help') return `${hi}Deze link kan mijn agent (nog) niet aan: hij werkt voor merken met een eigen webshop per land (UGREEN, Anker, eufy, soundcore, Shokz, xTool...), niet voor winkels zoals bol.com of Coolblue. Heb je iets van zo'n merk op het oog? Stuur maar door!`;
+  return null;
 }
 
 export default function Home() {
@@ -96,7 +107,7 @@ export default function Home() {
           {!run && <div className="empty">Share a product link to start a run.</div>}
           {run && (<>
             <div className={'verdict ' + (CLS[run.status] ?? '')}>
-              <div className="big">{run.status === 'running' ? 'Working on it…' : run.status === 'cart_filled' ? `Cart filled at ${run.chosen_store}. You save ${eur(run.saving)}.` : run.status === 'refused' ? 'Refused: no switch.' : run.status === 'waiting' ? `Not yet. Watching for under ${eur(run.target)}.` : 'Run failed'}</div>
+              <div className="big">{run.status === 'running' ? 'Working on it…' : run.status === 'cart_filled' ? `Cart filled at ${run.chosen_store}. You save ${eur(run.saving)}.` : run.status === 'refused' ? 'Refused: no switch.' : run.status === 'waiting' ? `Not yet. Watching for under ${eur(run.target)}.` : run.status === 'cannot_help' ? 'Cannot help with this link.' : 'Run failed'}</div>
               <div>{run.product_title} {run.sku ? `· SKU ${run.sku}` : ''} {run.source_price ? `· ${eur(run.source_price)} at ${run.source_store}` : ''}</div>
               {run.status !== 'running' && <div style={{ marginTop: 8 }}>{run.verdict}</div>}
               <div className="row">
@@ -105,6 +116,8 @@ export default function Home() {
                 <span className="pill run">buyer country {run.buyer_country}</span>
               </div>
             </div>
+            {replyText(run) && (<><h2>Reply for {run.shared_by || 'the person who shared this'}</h2>
+              <div className="quote">{replyText(run)}<small><button className="ghost" style={{ padding: '4px 10px', marginTop: 6 }} onClick={(e) => { navigator.clipboard?.writeText(replyText(run)); e.target.textContent = 'Copied'; }}>Copy</button></small></div></>)}
             {rules && (<><h2>Your rules, read from Senso before acting</h2>
               {Object.values(rules).filter(Boolean).sort().map((r) => <div className="quote" key={r}>{r}</div>)}
               {chunks[0] && <div className="hint">Source: “{chunks[0].title}”, content {chunks[0].content_id?.slice(0, 8)}, version {chunks[0].version_id?.slice(0, 8)}</div>}</>)}

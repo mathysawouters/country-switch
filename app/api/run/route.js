@@ -2,7 +2,8 @@ import { startRun, createWatch } from '@/lib/agent.mjs';
 // The trigger. No chat: a shared link (POST body or ?url=) starts a run that finishes on its own.
 // With a target price it becomes a standing order that the server keeps re-checking.
 async function go(url, { gate, target, from } = {}) {
-  if (!url || !/^https:\/\/[^/]+\/.*products\//.test(url)) return Response.json({ error: 'Send a product link (a brand webshop page with /products/ in it)' }, { status: 400 });
+  url = (url || '').trim();
+  if (!/^https?:\/\/[^/\s]+\//.test(url)) return Response.json({ error: 'Send a product link' }, { status: 400 });
   const t = target != null && target !== '' && !Number.isNaN(Number(target)) ? Number(target) : null;
   const watchId = t != null ? await createWatch(url, t, from) : null;
   const { id } = await startRun(url, { forceGate: gate === 'on' ? true : gate === 'off' ? false : undefined, target: t, watchId, sharedBy: from });
