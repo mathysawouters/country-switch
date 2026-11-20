@@ -47,3 +47,7 @@ pre { grid-column: 1 / -1; background: var(--soft); padding: 10px; overflow: aut
 .timing { border: 1px solid var(--line); border-left: 3px solid var(--fg); padding: 12px 14px; }
 .timing.good { border-left-color: var(--ok); } .timing.wait { border-left-color: var(--no); }
 .timing .big2 { font-weight: 700; font-size: 17px; }
+.share input.small { flex: 0 0 170px; }
+@media (max-width: 860px) { .share { flex-wrap: wrap; } .share input.small { flex: 1 1 140px; } }
+.counter { font-size: 14px; padding: 8px 0 12px; color: var(--mute); } .counter b { color: var(--fg); font-size: 16px; }
+.mini { display: flex; gap: 4px; } .mini input { width: 64px; padding: 2px 6px; border: 1px solid var(--line); font: inherit; font-size: 12px; } .mini button { padding: 2px 8px; font-size: 12px; font-weight: 500; }

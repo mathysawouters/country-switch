@@ -2,8 +2,8 @@
 import { useEffect, useState, useCallback } from 'react';
 
 const eur = (n) => (n == null ? '' : '€' + Number(n).toFixed(2));
-const LABEL = { cart_filled: 'cart filled', refused: 'refused', running: 'running', error: 'error' };
-const CLS = { cart_filled: 'ok', refused: 'no', running: 'run', error: 'no' };
+const LABEL = { cart_filled: 'cart filled', refused: 'refused', running: 'running', error: 'error', waiting: 'waiting for price' };
+const CLS = { cart_filled: 'ok', refused: 'no', running: 'run', error: 'no', waiting: 'run' };
 const DEC = { chosen: 'chosen', refused: 'refused by your rule', not_same_item: 'not the same item', source: 'where you were', not_needed: 'not needed', not_cheaper: 'not cheaper' };
 
 const COLORS = ['#0a0a0a', '#0a7a3d', '#b42318', '#6b6b6b', '#8a5a00', '#3b3b9a', '#00707a'];
@@ -29,8 +29,11 @@ function PriceChart({ t }) {
 
 export default function Home() {
   const [url, setUrl] = useState('');
+  const [target, setTarget] = useState('');
+  const [from, setFrom] = useState('');
+  const [edit, setEdit] = useState({});
   const [busy, setBusy] = useState(false);
-  const [data, setData] = useState({ runs: [], stats: [] });
+  const [data, setData] = useState({ runs: [], stats: [], watches: [], totals: null });
   const [sel, setSel] = useState(null);
   const [detail, setDetail] = useState(null);
   const [open, setOpen] = useState(null);
@@ -45,27 +48,42 @@ export default function Home() {
 
   const share = async (gate) => {
     if (!url) return; setBusy(true);
-    const r = await fetch('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, gate }) }).then((x) => x.json());
-    setBusy(false); if (r.id) { setSel(r.id); setUrl(''); loadRuns(); } else alert(r.error);
+    const r = await fetch('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, gate, target, from }) }).then((x) => x.json());
+    setBusy(false); if (r.id) { setSel(r.id); setUrl(''); setTarget(''); loadRuns(); } else alert(r.error);
   };
 
+  const watch = async (body) => { await fetch('/api/watch', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); loadRuns(); };
+  // Follow a standing order: when the agent starts a new check for the run on screen, show it.
+  useEffect(() => { const cur = data.runs.find((r) => r.id === sel); if (!cur?.watch_id) return; const newest = data.runs.find((r) => r.watch_id === cur.watch_id); if (newest && newest.id !== sel) setSel(newest.id); }, [data.runs, sel]);
+  const tot = data.totals;
   const run = detail?.run; const rules = run?.summary?.rules; const chunks = run?.summary?.senso_chunks ?? [];
   return (
     <div className="wrap">
+      {tot && <div className="counter"><b>{tot.links}</b> links checked{Number(tot.people) > 0 && <> for <b>{tot.people}</b> people</>} · cheaper next door on <b>{tot.helped}</b> of them · <b>{eur(tot.saved)}</b> found</div>}
       <header><h1>Country Switch</h1><span className="tag">Same shop, same product, cheaper next door. It fills the cart or refuses, and shows why.</span></header>
       <div className="share">
         <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Share a product link (no chat, the agent does the rest)" onKeyDown={(e) => e.key === 'Enter' && share()} />
-        <button disabled={busy} onClick={() => share()}>{busy ? 'Starting…' : 'Share link'}</button>
+        <input className="small" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="buy under € (optional)" inputMode="decimal" />
+        <input className="small" value={from} onChange={(e) => setFrom(e.target.value)} placeholder="from (optional)" />
+        <button disabled={busy} onClick={() => share()}>{busy ? 'Starting…' : target ? 'Place standing order' : 'Share link'}</button>
       </div>
       <div className="hint">Also works without this page: any share sheet or bookmarklet can call <code>/api/run?url=…</code>. The agent runs alone and reports back here.</div>
       <div className="grid">
         <aside>
+          {data.watches?.length > 0 && (<><h2>Standing orders: the agent keeps watching</h2>
+            <ul className="runs">{data.watches.map((w) => (
+              <li key={w.id} className={w.last_run_id === sel ? 'on' : ''} onClick={() => w.last_run_id && setSel(w.last_run_id)}>
+                <div className="t">{w.product_title ?? w.source_url}</div>
+                <div className="s"><span>buy under {eur(w.target)}{w.last_best ? ` · now ${eur(w.last_best)} at ${w.last_store}` : ''}</span><span className={'pill ' + (w.status === 'triggered' ? 'ok' : 'run')}>{w.status === 'triggered' ? 'cart filled' : 'watching'}</span></div>
+                <div className="s" onClick={(e) => e.stopPropagation()}><span>{w.checks} checks{w.shared_by ? ` · for ${w.shared_by}` : ''}</span>
+                  <span className="mini"><input value={edit[w.id] ?? ''} onChange={(e) => setEdit({ ...edit, [w.id]: e.target.value })} placeholder="new €" /><button className="ghost" onClick={() => edit[w.id] && watch({ id: w.id, target: edit[w.id] }).then(() => setEdit({ ...edit, [w.id]: '' }))}>set</button><button className="ghost" onClick={() => watch({ id: w.id, stop: true })}>stop</button></span></div>
+              </li>))}</ul></>)}
           <h2>Runs</h2>
           <ul className="runs">
             {data.runs.map((r) => (
               <li key={r.id} className={r.id === sel ? 'on' : ''} onClick={() => setSel(r.id)}>
                 <div className="t">{r.product_title ?? r.source_url}</div>
-                <div className="s"><span>{r.source_store} {r.status === 'cart_filled' ? `→ ${r.chosen_store}` : ''}</span><span className={'pill ' + CLS[r.status]}>{LABEL[r.status] ?? r.status}{r.status === 'cart_filled' ? ' −' + eur(r.saving) : ''}</span></div>
+                <div className="s"><span>{r.shared_by ? r.shared_by + ' · ' : ''}{r.source_store} {r.status === 'cart_filled' ? `→ ${r.chosen_store}` : ''}</span><span className={'pill ' + CLS[r.status]}>{LABEL[r.status] ?? r.status}{r.status === 'cart_filled' ? ' −' + eur(r.saving) : ''}</span></div>
               </li>
             ))}
           </ul>
@@ -78,7 +96,7 @@ export default function Home() {
           {!run && <div className="empty">Share a product link to start a run.</div>}
           {run && (<>
             <div className={'verdict ' + (CLS[run.status] ?? '')}>
-              <div className="big">{run.status === 'running' ? 'Working on it…' : run.status === 'cart_filled' ? `Cart filled at ${run.chosen_store}. You save ${eur(run.saving)}.` : run.status === 'refused' ? 'Refused: no switch.' : 'Run failed'}</div>
+              <div className="big">{run.status === 'running' ? 'Working on it…' : run.status === 'cart_filled' ? `Cart filled at ${run.chosen_store}. You save ${eur(run.saving)}.` : run.status === 'refused' ? 'Refused: no switch.' : run.status === 'waiting' ? `Not yet. Watching for under ${eur(run.target)}.` : 'Run failed'}</div>
               <div>{run.product_title} {run.sku ? `· SKU ${run.sku}` : ''} {run.source_price ? `· ${eur(run.source_price)} at ${run.source_store}` : ''}</div>
               {run.status !== 'running' && <div style={{ marginTop: 8 }}>{run.verdict}</div>}
               <div className="row">
@@ -98,10 +116,10 @@ export default function Home() {
                 <div className="hint">Price history comes from the agent's own ledger in SingleStore: every run adds an observation per shop. Tracking started on {run.summary.timing.since}.</div>
               </div></>)}
             <h2>Every offer the agent looked at</h2>
-            <div className="scroll"><table><thead><tr><th>Shop</th><th>Listing</th><th>SKU</th><th>Price</th><th>Same item</th><th>Ships to you</th><th>Decision</th></tr></thead>
+            <div className="scroll"><table><thead><tr><th>Shop</th><th>Listing</th><th>SKU</th><th>Price</th><th>Delivery</th><th>Total</th><th>Same item</th><th>Ships to you</th><th>Decision</th></tr></thead>
               <tbody>{(detail.offers ?? []).map((o, i) => (
                 <tr key={i} className={o.decision === 'chosen' ? 'chosen' : o.decision === 'refused' ? 'refused' : o.decision === 'not_same_item' || o.decision === 'not_needed' || o.decision === 'not_cheaper' ? 'dim' : ''}>
-                  <td>{o.store}</td><td><a href={o.url} target="_blank" rel="noreferrer">{o.title}</a></td><td className="num">{o.sku}</td><td className="num">{eur(o.price)}</td>
+                  <td>{o.store}</td><td><a href={o.url} target="_blank" rel="noreferrer">{o.title}</a></td><td className="num">{o.sku}</td><td className="num">{eur(o.price)}</td><td className="num" title={o.ship_method ?? ''}>{o.shipping == null ? '' : Number(o.shipping) === 0 ? 'free' : eur(o.shipping)}</td><td className="num">{o.landed == null ? '' : eur(o.landed)}</td>
                   <td>{o.same_item ? 'yes' : 'no'}{o.same_item_score != null ? ` (${Number(o.same_item_score).toFixed(2)})` : ''}</td><td>{o.ships_to_buyer == null ? '' : o.ships_to_buyer ? 'yes' : 'no'}</td>
                   <td><b>{DEC[o.decision] ?? o.decision}</b><br /><span style={{ fontWeight: 400 }}>{o.reason}</span></td>
                 </tr>))}</tbody></table></div>
