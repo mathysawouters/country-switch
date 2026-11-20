@@ -29,9 +29,9 @@
 .v2 .s-stats { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line); border-radius: 16px; background: var(--panel); overflow: hidden; }
 .v2 .s-stat { padding: 18px 20px 16px; border-left: 1px solid var(--line); min-width: 0; }
 .v2 .s-stat:first-child { border-left: 0; }
-.v2 .s-stat b { display: block; font-size: clamp(30px, 4.3vw, 64px); font-weight: 800; letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.v2 .s-stat b { display: block; font-size: clamp(24px, 2.6vw, 36px); font-weight: 700; letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .v2 .s-stat span { display: block; margin-top: 8px; color: var(--mute); font-size: 12.5px; text-transform: uppercase; letter-spacing: .09em; font-weight: 600; }
-.v2 .s-stat.good b { color: var(--go); text-shadow: 0 0 34px rgba(47,224,122,.35); }
+.v2 .s-stat.good b { color: var(--go);  }
 .v2 .s-stat.good span { color: var(--go); }
 
 /* layout: slim rail + wide stage */
@@ -104,18 +104,18 @@
 .v2 .t-ok .s-kicker { color: var(--go); } .v2 .t-ok .s-dot { background: var(--go); box-shadow: 0 0 14px var(--go); }
 .v2 .t-no .s-kicker { color: var(--no); } .v2 .t-no .s-dot { background: var(--no); }
 .v2 .t-run .s-dot, .v2 .t-wait .s-dot { background: var(--fg); animation: v2pulse 1.2s ease-in-out infinite; }
-.v2 .s-ptitle { font-size: clamp(22px, 2.5vw, 34px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-top: 8px; }
+.v2 .s-ptitle { font-size: clamp(19px, 1.8vw, 25px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-top: 8px; }
 .v2 .s-pmeta { color: var(--mute); font-size: 15px; margin-top: 6px; }
-.v2 .s-headline { font-size: clamp(30px, 4.4vw, 60px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.05; margin-top: 18px; }
+.v2 .s-headline { font-size: clamp(22px, 2.4vw, 32px); font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; margin-top: 18px; }
 .v2 .t-no .s-headline { color: var(--no); }
 .v2 .s-story { display: flex; align-items: flex-end; gap: 10px 26px; flex-wrap: wrap; margin-top: 22px; }
 .v2 .s-leg { display: flex; flex-direction: column; min-width: 0; }
 .v2 .s-leg small { color: var(--mute); font-size: 15px; margin-top: 6px; }
-.v2 .s-was { font-size: clamp(30px, 4vw, 58px); color: var(--mute); text-decoration: line-through; text-decoration-color: var(--no); text-decoration-thickness: 4px; font-weight: 600; line-height: 1.1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-.v2 .s-arrow { font-size: clamp(30px, 4vw, 58px); color: var(--faint); line-height: 1.1; padding-bottom: 28px; }
-.v2 .s-now { font-size: clamp(60px, 9.4vw, 140px); font-weight: 850; letter-spacing: -0.055em; line-height: .92; color: var(--go); font-variant-numeric: tabular-nums; text-shadow: 0 0 60px rgba(47,224,122,.35); }
-.v2 .s-now.plain { color: var(--fg); text-shadow: none; font-size: clamp(46px, 6.5vw, 96px); }
-.v2 .s-save { flex: 1 1 100%; margin-top: 12px; font-size: clamp(24px, 3.2vw, 46px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; color: var(--go); }
+.v2 .s-was { font-size: clamp(22px, 2.2vw, 30px); color: var(--mute); text-decoration: line-through; text-decoration-color: var(--no); text-decoration-thickness: 2px; font-weight: 600; line-height: 1.1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.v2 .s-arrow { font-size: clamp(20px, 2vw, 28px); color: var(--faint); line-height: 1.1; padding-bottom: 6px; }
+.v2 .s-now { font-size: clamp(34px, 3.6vw, 52px); font-weight: 750; letter-spacing: -0.03em; line-height: 1.05; color: var(--go); font-variant-numeric: tabular-nums;  }
+.v2 .s-now.plain { color: var(--fg); text-shadow: none; font-size: clamp(30px, 3.2vw, 46px); }
+.v2 .s-save { flex: 1 1 100%; margin-top: 12px; font-size: clamp(17px, 1.5vw, 21px); font-weight: 650; letter-spacing: -0.01em; line-height: 1.2; color: var(--go); }
 .v2 .s-save b { background: var(--go); color: #06110b; padding: 2px 16px; border-radius: 12px; font-weight: 850; font-variant-numeric: tabular-nums; white-space: nowrap; display: inline-block; }
 .v2 .s-verdict { margin-top: 24px; font-size: 18px; line-height: 1.45; max-width: 1000px; }
 .v2 .s-via { margin-top: 8px; color: var(--mute); font-size: 14px; max-width: 1000px; }
