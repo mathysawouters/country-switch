@@ -30,7 +30,17 @@ chrome.runtime.onMessage.addListener((msg, _sender, send) => {
     try {
       const r = await fetch('http://localhost:3311/api/amazon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ asin: msg.asin, title: msg.title, image: msg.image, source: msg.source, offers }) });
       saved = await r.json();
-    } catch (e) { saved = { error: 'The Country Switch app is not reachable on localhost:3311' }; }
+    } catch (e) {
+      // The agent is not running (for example after the hackathon): still give a useful answer from the prices just read.
+      // Simple built-in rule: only switch for 5 euro or more. No audit trail in this mode.
+      const eur = (n) => '€' + Number(n).toFixed(2);
+      const cands = offers.filter((o) => o.price && o.available && !o.robot && !o.error).sort((a, b) => a.price - b.price);
+      const best = cands[0]; const here = msg.source.price;
+      if (!best) saved = { status: 'refused', headline: 'Nothing to compare', verdict: 'No other Amazon country site showed a price for this item.', offline: true };
+      else if (here == null) saved = { status: 'cart_filled', headline: 'Available next door', verdict: `Not available here; ${best.site.replace('www.', '')} has it for ${eur(best.price)}. Check that it delivers to you before paying.`, chosen_site: best.site, cart_url: `https://${best.site}/gp/aws/cart/add.html?ASIN.1=${msg.asin}&Quantity.1=1`, offline: true };
+      else if (here - best.price >= 5) saved = { status: 'cart_filled', headline: `Cheaper next door: you save ${eur(here - best.price)}`, verdict: `${eur(best.price)} on ${best.site.replace('www.', '')} instead of ${eur(here)} here. Check that it delivers to you before paying. (Your agent is not running, so this run is not recorded.)`, chosen_site: best.site, cart_url: `https://${best.site}/gp/aws/cart/add.html?ASIN.1=${msg.asin}&Quantity.1=1`, offline: true };
+      else saved = { status: 'refused', headline: 'Stay here', verdict: `Best elsewhere is ${eur(best.price)} on ${best.site.replace('www.', '')}; here it is ${eur(here)}. Not worth switching (under 5 euro). (Your agent is not running, so this run is not recorded.)`, offline: true };
+    }
     send({ offers, saved });
   })();
   return true;
