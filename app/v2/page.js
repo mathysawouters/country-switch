@@ -116,6 +116,11 @@ export default function Stage() {
   const [target, setTarget] = useState('');
   const [from, setFrom] = useState('');
   const [edit, setEdit] = useState({});
+  const [ruleDoc, setRuleDoc] = useState(null);
+  const [ruleText, setRuleText] = useState(null);
+  const [ruleMsg, setRuleMsg] = useState('');
+  const openRules = async () => { setRuleMsg('Reading from Senso…'); const d = await fetch('/api/rules').then((r) => r.json()).catch(() => null); if (d?.text) { setRuleDoc(d); setRuleText(d.text); setRuleMsg(''); } else setRuleMsg(d?.error ?? 'Could not read the rules'); };
+  const saveRules = async () => { setRuleMsg('Saving to Senso and waiting for the new version…'); const d = await fetch('/api/rules', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: ruleText }) }).then((r) => r.json()).catch(() => null); if (d?.ok) { setRuleDoc(d); setRuleMsg(d.unchanged ? 'Nothing changed.' : `Saved. Senso now holds version ${d.version}. The next run reads it.`); } else setRuleMsg(d?.error ?? 'Saving failed'); };
   const [busy, setBusy] = useState(false);
   const [data, setData] = useState({ runs: [], stats: [], watches: [], totals: null });
   const [sel, setSel] = useState(null);
@@ -264,6 +269,12 @@ export default function Stage() {
                 <ol className="s-rules">{Object.values(rules).filter(Boolean).sort().map((r) => { const x = parseRule(r); const used = x.n && String(run.verdict ?? '').includes(`Rule ${x.n} `);
                   return <li key={r} className={used ? 'used' : ''}>{x.n && <span className="num">{x.n}</span>}<div>{x.name && <b>{x.name}{used ? ' · applied in this decision' : ''}</b>}<span>{x.text}</span></div></li>; })}</ol>
                 {chunks[0] && <div className="s-hint">Source: “{chunks[0].title}”, content {chunks[0].content_id?.slice(0, 8)}, version {chunks[0].version_id?.slice(0, 8)}</div>}
+                <div className="s-ruleedit">
+                  {ruleText == null ? <button className="s-ghost" onClick={openRules}>Edit my rules in Senso</button> : (<>
+                    <textarea value={ruleText} onChange={(e) => setRuleText(e.target.value)} rows={9} spellCheck={false} />
+                    <div className="s-rulebar"><button className="s-ghost" onClick={saveRules}>Save as a new version in Senso</button><button className="s-ghost" onClick={() => { setRuleText(null); setRuleMsg(''); }}>Close</button>{ruleDoc && <small>Document “{ruleDoc.title}”, version {ruleDoc.version}</small>}</div></>)}
+                  {ruleMsg && <div className="s-hint">{ruleMsg}</div>}
+                </div>
               </section>)}
 
               {run.summary?.past_decisions?.length > 0 && (<section className="s-card wide">

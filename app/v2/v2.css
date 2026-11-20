@@ -266,3 +266,8 @@
   .v2 pre { margin-left: 0; }
   .v2 .s-toolrow { margin-left: 0; }
 }
+
+.v2 .s-ruleedit { margin-top: 14px; }
+.v2 .s-ruleedit textarea { width: 100%; background: #0b0d0c; color: #f2f4f3; border: 1px solid var(--line); border-radius: 10px; padding: 12px; font: 13px/1.5 var(--font-geist-mono), monospace; resize: vertical; }
+.v2 .s-rulebar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; } .v2 .s-rulebar small { color: var(--mute); }
+.v2 .s-ghost { background: transparent; color: #f2f4f3; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; } .v2 .s-ghost:hover { border-color: #2fe07a; color: #2fe07a; }
