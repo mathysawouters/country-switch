@@ -204,3 +204,5 @@ pre { background: #101312; color: #d7f5e1; border-radius: 10px; padding: 12px; o
   .tiles { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   .result-actions .btn { width: 100%; }
 }
+.bm { text-align: center; color: #6b6b6b; font-size: 13px; margin: 6px auto 0; max-width: 760px; }
+.bmbtn { display: inline-block; margin-left: 6px; padding: 4px 12px; border-radius: 999px; background: #0a7a3d; color: #fff !important; font-weight: 600; text-decoration: none; cursor: grab; }
