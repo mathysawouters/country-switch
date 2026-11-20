@@ -149,12 +149,14 @@ export default function Stage() {
   const others = offers.filter((o) => !o.same_item);
   const reply = run ? replyText(run) : null;
   const usedTools = [...new Set(steps.map((s) => s.tool))];
+  // On a phone the drawer closes once a run is picked.
+  useEffect(() => { setRail((r) => (r === true && !window.matchMedia('(min-width: 1000px)').matches ? false : r)); }, [sel]);
   const railCls = rail == null ? '' : rail ? ' rail-open' : ' rail-closed';
   return (
     <div className={'v2' + railCls}>
       <nav className="s-switch" aria-label="Design versions"><a href="/">Classic</a><a href="/v2" className="on">Stage</a><a href="/v3">V3</a></nav>
       <header className="s-top">
-        <button className="s-railbtn" onClick={() => setRail(rail == null ? 'toggle' : !rail)} aria-label="Show or hide runs and standing orders"><span aria-hidden="true">☰</span> Runs <b>{data.runs.length}</b></button>
+        <button className="s-railbtn" onClick={() => setRail(rail == null ? !window.matchMedia('(min-width: 1000px)').matches : !rail)} aria-label="Show or hide runs and standing orders"><span aria-hidden="true">☰</span> Runs <b>{data.runs.length}</b></button>
         <div className="s-brand"><span className="s-logo" aria-hidden="true">⇄</span><h1>Country Switch</h1></div>
         <p className="s-tag">Same brand, same product, cheaper next door. Share a link and the agent fills the cart or refuses, and shows why.</p>
       </header>

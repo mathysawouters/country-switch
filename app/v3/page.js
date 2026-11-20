@@ -121,7 +121,7 @@ function Receipt({ run, same, flagOf, oflag, rules, chunks }) {
           </>)}
           {st === 'refused' && (<>
             <div className="r-close r-close-no">No switch. Buy it where you were.</div>
-            {run.source_price && <div className="r-row"><span>You pay<small>{flagOf(run.source_store)} {run.source_store} is already the best deal</small></span><span className="r-num">{eur(run.source_price)}</span></div>}
+            {run.source_price && <div className="r-row"><span>Price where you were<small>{flagOf(run.source_store)} {run.source_store} is already the best deal</small></span><span className="r-num">{eur(run.source_price)}</span></div>}
             <div className="r-row"><span>You save by switching</span><span className="r-num">{eur(0)}</span></div>
           </>)}
           {st === 'waiting' && (<>
