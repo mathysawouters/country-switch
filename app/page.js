@@ -76,6 +76,7 @@ function Result({ run, flagOf }) {
         </div>
       </div>
       {st !== 'running' && run.verdict && <p className="verdict-text">{run.verdict}</p>}
+      {via?.amazon && <p className="via">Amazon item {via.amazon.asin}{via.amazon.price ? `, shown at ${eur(via.amazon.price)} on ${via.amazon.host.replace('www.', '')}` : ''}. Amazon gives an agent no way to act, so the cart is at the brand's own shop. The same item on Amazon in other countries: {via.amazon.sites.map((x, k) => <span key={x.site}>{k ? ' · ' : ''}<a href={x.url} target="_blank" rel="noreferrer">{x.site.replace('amazon.', '')}</a></span>)}</p>}
       {via && <p className="via">You shared {via.shared === 'product name' ? `the name “${via.query}”` : `a ${via.shared} link`}. The agent traced it to the brand's own shop, {via.brand_shop}, and ignored {via.ignored?.length ?? 0} other sellers (rule 8).</p>}
       <div className="result-actions">
         {run.cart_url && <a className="btn primary" href={run.cart_url} target="_blank" rel="noreferrer">Open the filled cart · {eur(run.best_price)}</a>}
