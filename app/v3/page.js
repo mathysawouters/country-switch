@@ -224,7 +224,7 @@ export default function ReceiptPage() {
         </div>
         {tot && <div className="r-stats">
           <div><b>{tot.links}</b><span>links checked</span></div>
-          {Number(tot.people) > 0 && <><div><b>{tot.friends_asked}</b><span>friends asked</span></div><div><b>{tot.requests}</b><span>requests from {tot.people} of them</span></div></>}
+          {Number(tot.people) > 0 && <><div><b>{tot.friends_asked}</b><span>friends asked</span></div><div><b>{tot.requests}</b><span>requests</span></div></>}
           <div><b>{tot.helped}</b><span>cheaper next door</span></div>
           <div className="r-good"><b>{eur(tot.saved)}</b><span>found</span></div>
         </div>}

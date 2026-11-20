@@ -159,7 +159,7 @@ export default function Home() {
         </div>
         {tot && <div className="counter">
           <span className="stat"><b>{tot.links}</b> links checked</span>
-          {Number(tot.people) > 0 && <><span className="stat"><b>{tot.friends_asked}</b> friends asked</span><span className="stat"><b>{tot.requests}</b> requests from {tot.people} of them</span></>}
+          {Number(tot.people) > 0 && <><span className="stat"><b>{tot.friends_asked}</b> friends asked</span><span className="stat"><b>{tot.requests}</b> requests</span></>}
           <span className="stat"><b>{tot.helped}</b> cheaper next door</span>
           <span className="stat good"><b>{eur(tot.saved)}</b> found</span>
         </div>}
