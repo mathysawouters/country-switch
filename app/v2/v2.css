@@ -317,3 +317,11 @@
 .v2 .s-actions { align-items: center; gap: 16px; }
 .v2 .s-fold.slim { display: none; }
 .v2 .s-loop { display: none; }
+
+/* Runs and standing orders open as a dropdown panel under the Runs button, on every screen size. */
+.v2 .s-layout, .v2.rail-open .s-layout, .v2.rail-closed .s-layout { grid-template-columns: minmax(0, 1fr); }
+.v2 .s-rail { display: none; }
+.v2.rail-open .s-rail { display: grid; position: absolute; top: 70px; left: 28px; width: min(380px, 92vw); max-height: 72vh; z-index: 50; background: var(--bg); border: 1px solid var(--line2, var(--line)); border-radius: 14px; padding: 12px; box-shadow: 0 24px 60px rgba(0,0,0,.6); }
+.v2.rail-open .s-scrim { display: block; position: fixed; inset: 0; background: transparent; z-index: 40; }
+.v2 .s-railbtn::after { content: "▾"; margin-left: 2px; color: var(--mute); }
+.v2 { position: relative; }
