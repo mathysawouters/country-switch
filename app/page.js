@@ -115,6 +115,8 @@ export default function Home() {
                 <PriceChart t={run.summary.timing} />
                 <div className="hint">Price history comes from the agent's own ledger in SingleStore: every run adds an observation per shop. Tracking started on {run.summary.timing.since}.</div>
               </div></>)}
+            {run.summary?.past_decisions?.length > 0 && (<><h2>Decision memory in Senso: this item came up before</h2>
+              {run.summary.past_decisions.slice(0, 3).map((d) => <div className="quote" key={d.content_id}>{d.text}<small>{d.title} · Senso document {String(d.content_id).slice(0, 8)}</small></div>)}</>)}
             <h2>Every offer the agent looked at</h2>
             <div className="scroll"><table><thead><tr><th>Shop</th><th>Listing</th><th>SKU</th><th>Price</th><th>Delivery</th><th>Total</th><th>Same item</th><th>Ships to you</th><th>Decision</th></tr></thead>
               <tbody>{(detail.offers ?? []).map((o, i) => (
