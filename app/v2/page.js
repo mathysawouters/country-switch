@@ -220,15 +220,18 @@ export default function Stage() {
             <Hero run={run} flagOf={flagOf} />
 
             {same.length > 0 && (<section className="s-block">
-              <h2>Border crossing <span>the same item, country by country</span></h2>
-              <div className="s-strip">{same.map((o, i) => (
-                <a key={i} className={'s-tile d-' + o.decision} href={o.url} target="_blank" rel="noreferrer" title={o.reason ?? ''}>
-                  <div className="s-tile-head"><span className="s-flag">{oflag(o)}</span><span className="s-status">{TILE[o.decision] ?? DEC[o.decision] ?? o.decision}</span></div>
-                  <div className="s-host">{o.store}</div>
-                  <div className="s-total">{money(o.landed ?? o.price, o.currency)}</div>
-                  <div className="s-lines"><span>price {money(o.price, o.currency)}</span><span>{delivery(o) ? `delivery ${delivery(o)}` : o.ships_to_buyer === 0 ? 'no delivery to you' : ''}</span></div>
-                  {o.reason && <div className="s-why">{shortReason(o.reason)}</div>}
-                </a>))}</div>
+              <h2>The same item, country by country</h2>
+              <div className="s-rows">
+                <div className="s-row s-rowhead"><span>Shop</span><span>Price</span><span>Delivery</span><span>Total</span><span>What the agent decided</span></div>
+                {same.map((o, i) => (
+                  <a key={i} className={'s-row r-' + o.decision} href={o.url} target="_blank" rel="noreferrer">
+                    <span className="s-shop"><i>{oflag(o)}</i>{o.store}</span>
+                    <span className="s-n">{money(o.price, o.currency)}</span>
+                    <span className="s-d">{delivery(o) ? delivery(o) : o.ships_to_buyer === 0 ? 'none to you' : ''}</span>
+                    <span className="s-n">{(!o.currency || o.currency === 'EUR') ? money(o.landed ?? o.price, o.currency) : ''}</span>
+                    <span className="s-w"><b>{TILE[o.decision] ?? DEC[o.decision] ?? o.decision}</b>{o.reason ? ' · ' + shortReason(o.reason) : ''}</span>
+                  </a>))}
+              </div>
             </section>)}
 
             <section className="s-term">
