@@ -9,7 +9,7 @@ function parse(html) {
   const robot = /Enter the characters you see below|api-services-support|To discuss automated access|Geben Sie die Zeichen|Saisissez les caract/i.test(html);
   const title = text((html.match(/id="productTitle"[^>]*>([\s\S]{3,400}?)<\/span>/) ?? [])[1]) || null;
   const p = (html.match(/id="corePrice_feature_div"[\s\S]{0,3000}?a-offscreen">\s*([^<]+)/) ?? html.match(/id="corePriceDisplay_desktop_feature_div"[\s\S]{0,3000}?a-offscreen">\s*([^<]+)/) ?? html.match(/apex-pricetopay-value[\s\S]{0,800}?a-offscreen">\s*([^<]+)/) ?? [])[1];
-  const avail = text((html.match(/id="availability"[^>]*>([\s\S]{0,600}?)<\/div>/) ?? [])[1]).slice(0, 90);
+  const avail = text((html.match(/id="availability"[^>]*>([\s\S]{0,300}?)<\/span>/) ?? [])[1]).slice(0, 60);
   const unavailable = /Currently unavailable|Momenteel niet verkrijgbaar|Derzeit nicht verf|Actuellement indisponible|Tijdelijk niet op voorraad/i.test(avail);
   const deliver = [text((html.match(/id="glow-ingress-line1"[^>]*>([\s\S]{0,200}?)<\/span>/) ?? [])[1]), text((html.match(/id="glow-ingress-line2"[^>]*>([\s\S]{0,200}?)<\/span>/) ?? [])[1])].filter(Boolean).join(' ');
   return { robot, title, price: num(p), currency: 'EUR', available: !!p && !unavailable, availability: avail || null, deliver: deliver || null };
