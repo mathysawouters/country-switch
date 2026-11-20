@@ -76,13 +76,12 @@ function Hero({ run, flagOf }) {
           {st === 'running' && <div className="s-bar"><i /></div>}
         </div>
       </div>
-      {st !== 'running' && run.verdict && <p className="s-verdict">{run.verdict}</p>}
+      {st !== 'running' && run.verdict && !(filled && saved) && <p className="s-verdict">{run.verdict}</p>}
       {via?.amazon && <p className="s-via">Amazon item {via.amazon.asin}{via.amazon.price ? `, shown at ${eur(via.amazon.price)} on ${via.amazon.host.replace('www.', '')}` : ''}. Amazon gives an agent no way to act, so the cart is at the brand's own shop. The same item on Amazon in other countries: {via.amazon.sites.map((x, k) => <span key={x.site}>{k ? ' · ' : ''}<a href={x.url} target="_blank" rel="noreferrer">{x.site.replace('amazon.', '')}</a></span>)}</p>}
       {via && <p className="s-via">You shared {via.shared === 'product name' ? `the name “${via.query}”` : `a ${via.shared} link`}. The agent traced it to the brand's own shop, {via.brand_shop}, and ignored {via.ignored?.length ?? 0} other sellers (rule 8).</p>}
       <div className="s-actions">
         {run.cart_url && <a className="s-btn go" href={run.cart_url} target="_blank" rel="noreferrer">Open the filled cart · {eur(run.best_price)}</a>}
-        <span className="s-chip">same-item check: {run.gate_same_item ? 'Superlinked (gate ON)' : 'naive (gate OFF)'}</span>
-        <span className="s-chip">{flag(run.buyer_country)} buyer country {run.buyer_country}</span>
+        <span className="s-quiet">Delivered to {flag(run.buyer_country)} {run.buyer_country}{run.gate_same_item ? '' : ' · same-item check off'}</span>
       </div>
       
     </section>
@@ -162,7 +161,7 @@ export default function Stage() {
       <header className="s-top">
         <button className="s-railbtn" onClick={() => setRail(rail == null ? !window.matchMedia('(min-width: 1000px)').matches : !rail)} aria-label="Show or hide runs and standing orders"><span aria-hidden="true">☰</span> Runs <b>{data.runs.length}</b></button>
         <div className="s-brand"><span className="s-logo" aria-hidden="true">⇄</span><h1>Country Switch</h1></div>
-        <p className="s-tag">Same brand, same product, cheaper next door. Share a link and the agent fills the cart or refuses, and shows why.</p>
+        <p className="s-tag">Same brand, same product, cheaper next door.</p>
       </header>
       {tot && <div className="s-stats">
         <div className="s-stat"><b>{tot.links}</b><span>links checked</span></div>
@@ -194,7 +193,7 @@ export default function Stage() {
               ))}
             </ul>
           </section>
-          <section className="s-side">
+          <section className="s-loop s-side">
             <h3>The loop</h3><div className="s-sub">Same-item check on or off</div>
             <table className="s-loop"><thead><tr><th>Check</th><th>Runs</th><th>Carts</th><th>Wrong item</th><th>Saved</th></tr></thead>
               <tbody>{data.stats.map((s) => <tr key={s.check_mode}><td><span className={'s-tool ' + (TOOLS.includes(s.check_mode) ? s.check_mode : 'agent')}>{s.check_mode}</span></td><td className="num">{s.runs}</td><td className="num">{s.carts}</td><td className={'num' + (Number(s.wrong_item) ? ' bad' : '')}>{s.wrong_item}</td><td className="num">{eur(s.honest_saving)}</td></tr>)}</tbody></table>

@@ -308,3 +308,12 @@
 .v2 .r-refused .s-w b { color: var(--no); }
 .v2 .r-not_needed, .v2 .r-not_cheaper { color: var(--mute); } .v2 .r-not_needed .s-w b, .v2 .r-not_cheaper .s-w b { color: var(--mute); }
 @media (max-width: 860px) { .v2 .s-row { grid-template-columns: 1fr 1fr; gap: 4px 12px; } .v2 .s-rowhead { display: none; } .v2 .s-w { grid-column: 1 / -1; } }
+
+/* Less on screen: no counter row, no hint row, fewer labels. */
+.v2 .s-stats { display: none; }
+.v2 details:has(> summary) { }
+.v2 .s-share + details, .v2 .s-hintrow { display: none; }
+.v2 .s-quiet { color: var(--mute); font-size: 14px; align-self: center; }
+.v2 .s-actions { align-items: center; gap: 16px; }
+.v2 .s-fold.slim { display: none; }
+.v2 .s-loop { display: none; }
