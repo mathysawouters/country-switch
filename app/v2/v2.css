@@ -27,10 +27,10 @@
 
 /* pitch counter */
 .v2 .s-stats { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line); border-radius: 16px; background: var(--panel); overflow: hidden; }
-.v2 .s-stat { padding: 18px 24px 16px; border-left: 1px solid var(--line); min-width: 0; }
+.v2 .s-stat { padding: 18px 20px 16px; border-left: 1px solid var(--line); min-width: 0; }
 .v2 .s-stat:first-child { border-left: 0; }
-.v2 .s-stat b { display: block; font-size: clamp(34px, 5.2vw, 76px); font-weight: 800; letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.v2 .s-stat span { display: block; margin-top: 8px; color: var(--mute); font-size: 14px; text-transform: uppercase; letter-spacing: .09em; font-weight: 600; }
+.v2 .s-stat b { display: block; font-size: clamp(30px, 4.3vw, 64px); font-weight: 800; letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.v2 .s-stat span { display: block; margin-top: 8px; color: var(--mute); font-size: 12.5px; text-transform: uppercase; letter-spacing: .09em; font-weight: 600; }
 .v2 .s-stat.good b { color: var(--go); text-shadow: 0 0 34px rgba(47,224,122,.35); }
 .v2 .s-stat.good span { color: var(--go); }
 

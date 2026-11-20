@@ -162,7 +162,7 @@ export default function Stage() {
       </header>
       {tot && <div className="s-stats">
         <div className="s-stat"><b>{tot.links}</b><span>links checked</span></div>
-        {Number(tot.people) > 0 && <div className="s-stat"><b>{tot.people}</b><span>{Number(tot.people) === 1 ? 'person' : 'people'} asked</span></div>}
+        {Number(tot.people) > 0 && <><div className="s-stat"><b>{tot.friends_asked}</b><span>friends asked</span></div><div className="s-stat"><b>{tot.requests}</b><span>requests from {tot.people} of them</span></div></>}
         <div className="s-stat"><b>{tot.helped}</b><span>cheaper next door</span></div>
         <div className="s-stat good"><b>{eur(tot.saved)}</b><span>found</span></div>
       </div>}

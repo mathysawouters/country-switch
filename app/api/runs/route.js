@@ -6,5 +6,7 @@ export async function GET() {
     rows('SELECT id, created, source_url, shared_by, target, status, last_checked, checks, last_best, last_store, last_run_id, cart_url, product_title FROM cs_watches WHERE status <> ? ORDER BY created DESC LIMIT 12', ['stopped']),
     rows(`SELECT COUNT(*) AS links, SUM(best > 0) AS helped, ROUND(SUM(best), 2) AS saved, (SELECT COUNT(DISTINCT shared_by) FROM cs_runs WHERE shared_by IS NOT NULL AND shared_by <> '') AS people FROM (SELECT source_url, MAX(IF(status = 'cart_filled' AND gate_same_item = 1, saving, 0)) AS best FROM cs_runs WHERE status IN ('cart_filled', 'refused', 'waiting', 'cannot_help') GROUP BY source_url) t`),
   ]);
-  return Response.json({ runs, stats, watches, totals: totals[0] });
+  // Friends texted from the room (20 WhatsApp chats, checked on 20 Nov) and how many requests came back.
+  const [fr] = await rows("SELECT COUNT(DISTINCT source_url) AS requests FROM cs_runs WHERE shared_by IS NOT NULL AND shared_by <> ''");
+  return Response.json({ runs, stats, watches, totals: { ...totals[0], friends_asked: Number(process.env.FRIENDS_ASKED ?? 20), requests: fr?.requests ?? 0 } });
 }

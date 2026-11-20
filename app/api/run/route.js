@@ -10,4 +10,4 @@ async function go(url, { gate, target, from, title, price } = {}) {
   return Response.json({ id, watchId });
 }
 export async function POST(req) { const b = await req.json().catch(() => ({})); return go(b.url, b); }
-export async function GET(req) { const u = new URL(req.url); const r = await go(u.searchParams.get('url'), { gate: u.searchParams.get('gate'), target: u.searchParams.get('target'), from: u.searchParams.get('from'), title: u.searchParams.get('title'), price: u.searchParams.get('price') }); if (r.status !== 200) return r; const { id } = await r.json(); return Response.redirect(new URL(`/?run=${id}`, req.url)); }
+export async function GET(req) { const u = new URL(req.url); const r = await go(u.searchParams.get('url'), { gate: u.searchParams.get('gate'), target: u.searchParams.get('target'), from: u.searchParams.get('from'), title: u.searchParams.get('title'), price: u.searchParams.get('price') }); if (r.status !== 200) return r; const { id } = await r.json(); return Response.redirect(new URL(`/v2?run=${id}`, req.url)); }
