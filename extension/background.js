@@ -12,7 +12,12 @@ function parse(html) {
   const avail = text((html.match(/id="availability"[^>]*>([\s\S]{0,300}?)<\/span>/) ?? [])[1]).slice(0, 60);
   const unavailable = /Currently unavailable|Momenteel niet verkrijgbaar|Derzeit nicht verf|Actuellement indisponible|Tijdelijk niet op voorraad/i.test(avail);
   const deliver = [text((html.match(/id="glow-ingress-line1"[^>]*>([\s\S]{0,200}?)<\/span>/) ?? [])[1]), text((html.match(/id="glow-ingress-line2"[^>]*>([\s\S]{0,200}?)<\/span>/) ?? [])[1])].filter(Boolean).join(' ');
-  return { robot, title, price: num(p), currency: 'EUR', available: !!p && !unavailable, availability: avail || null, deliver: deliver || null };
+  // An Amazon Business session shows the price without VAT first and the price with VAT in brackets. Compare prices with VAT.
+  const at = html.search(/id="corePrice(?:Display_desktop)?_feature_div"/);
+  const block = at < 0 ? '' : text(html.slice(at, at + 9000).replace(/<script[\s\S]*?<\/script>/g, ' '));
+  const incl = num((block.match(/\(\s*€?\s*([\d.,]+)\s+(?:€?\s*[\d.,]+\s+)?(?:incl\.?\s*VAT|inkl\.?\s*(?:USt|MwSt)|incl\.?\s*btw|TTC)/i) ?? [])[1]);
+  const shown = num(p);
+  return { robot, title, price: incl ?? shown, price_excl_vat: incl ? shown : null, currency: 'EUR', available: !!p && !unavailable, availability: avail || null, deliver: (deliver || '').replace(/&zwnj;/g, '').trim() || null };
 }
 
 chrome.runtime.onMessage.addListener((msg, _sender, send) => {

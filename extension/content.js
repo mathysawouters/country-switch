@@ -14,14 +14,15 @@
   box.id = 'cs-panel';
   box.style.cssText = 'position:fixed;right:18px;bottom:18px;z-index:2147483647;width:360px;max-width:92vw;background:#0e100f;color:#f2f4f3;border:1px solid #26302b;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.45);font:14px/1.4 -apple-system,Segoe UI,Helvetica,Arial,sans-serif;padding:14px 16px';
   const head = '<div style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:#2fe07a;color:#06140c">⇄</span>Country Switch</div>';
-  box.innerHTML = head + '<div style="color:#9aa39e;margin:6px 0 10px">Same item, same ASIN, on Amazon next door.</div><button id="cs-go" style="width:100%;padding:10px;border:0;border-radius:10px;background:#2fe07a;color:#06140c;font-weight:800;font-size:14px;cursor:pointer">Check the neighbours</button>';
+  box.innerHTML = head + '<div style="color:#9aa39e;margin:6px 0 10px">Same item, same ASIN, on Amazon next door. Prices with VAT.</div><button id="cs-go" style="width:100%;padding:10px;border:0;border-radius:10px;background:#2fe07a;color:#06140c;font-weight:800;font-size:14px;cursor:pointer">Check the neighbours</button>';
   document.body.appendChild(box);
 
   q('#cs-go').addEventListener('click', () => {
     const priceEl = q('#corePrice_feature_div .a-offscreen') || q('#corePriceDisplay_desktop_feature_div .a-offscreen') || q('#apex_desktop .a-offscreen');
     const source = {
       site: location.hostname, country: CC[location.hostname] ?? null, url: `https://${location.hostname}/dp/${asin}`,
-      price: num(priceEl?.textContent), available: !!priceEl,
+      // On an Amazon Business session the first price is without VAT; the price with VAT is in brackets. Use the one with VAT.
+      price: num(((q('#corePrice_feature_div') || q('#corePriceDisplay_desktop_feature_div'))?.textContent ?? '').replace(/\s+/g, ' ').match(/\(\s*€?\s*([\d.,]+)\s+(?:€?\s*[\d.,]+\s+)?(?:incl\.?\s*VAT|inkl\.?\s*(?:USt|MwSt)|incl\.?\s*btw|TTC)/i)?.[1]) ?? num(priceEl?.textContent), available: !!priceEl,
       deliver: [q('#glow-ingress-line1')?.textContent, q('#glow-ingress-line2')?.textContent].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim(),
     };
     const title = (q('#productTitle')?.textContent ?? document.title).trim().slice(0, 200);
