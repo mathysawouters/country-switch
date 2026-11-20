@@ -1,0 +1,10 @@
+import { startRun } from '../lib/agent.mjs';
+import { rows } from '../lib/s2.mjs';
+const url = process.argv[2];
+const force = process.argv[3] === 'on' ? true : process.argv[3] === 'off' ? false : undefined;
+const { id, done } = await startRun(url, { forceGate: force });
+await done;
+for (const s of await rows('SELECT seq, tool, action, status, ms, summary FROM cs_steps WHERE run_id = ? ORDER BY seq', [id])) console.log(String(s.seq).padStart(2), s.tool.padEnd(11), s.action.padEnd(16), s.status, String(s.ms).padStart(5) + 'ms', '|', s.summary);
+console.log('\nOFFERS');
+for (const o of await rows('SELECT store, sku, price, same_item, ships_to_buyer, decision, reason FROM cs_offers WHERE run_id = ? ORDER BY price', [id])) console.log(o.store.padEnd(16), String(o.sku).padEnd(14), o.price, 'same=' + o.same_item, 'ships=' + o.ships_to_buyer, o.decision, '|', o.reason.slice(0, 130));
+console.log('\nRUN', JSON.stringify((await rows('SELECT status, verdict, cart_url FROM cs_runs WHERE id = ?', [id]))[0], null, 1));
