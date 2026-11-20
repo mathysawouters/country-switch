@@ -1,9 +1,39 @@
 {
   "schema": "firedrill.local-descriptor.v1",
-  "source_roots": [ { "alias": "app", "identity_sha256": "913988d0c6533f53a6d6cb323df3e4108545b5ec49b20c63f7e0847dd8d50dd1" } ],
-  "services": [ { "alias": "agent", "root_alias": "app", "role": "agent", "depends_on": [], "configuration": [] } ],
+  "source_roots": [
+    {
+      "alias": "app",
+      "identity_sha256": "913988d0c6533f53a6d6cb323df3e4108545b5ec49b20c63f7e0847dd8d50dd1"
+    }
+  ],
+  "services": [
+    {
+      "alias": "agent",
+      "root_alias": "app",
+      "role": "agent",
+      "depends_on": [],
+      "configuration": []
+    }
+  ],
   "entry_service": "agent",
-  "driver": { "profile": "http.v1", "adapter_sha256": "647438423fd273824271724b7ac3eabf79f7cb9712ab1c9e22969f79fd37512c", "authentication": "anonymous", "state_domains": ["proc"] },
-  "state_domains": [ { "alias": "proc", "service_alias": "agent", "kind": "process", "location": "local", "reset": "fresh-process", "concurrency": "independent", "hook_sha256": null } ],
+  "driver": {
+    "profile": "http.v1",
+    "adapter_sha256": "647438423fd273824271724b7ac3eabf79f7cb9712ab1c9e22969f79fd37512c",
+    "authentication": "anonymous",
+    "state_domains": [
+      "ledger"
+    ]
+  },
+  "state_domains": [
+    {
+      "alias": "ledger",
+      "service_alias": "agent",
+      "kind": "database",
+      "location": "observation-only",
+      "reset": "unavailable",
+      "concurrency": "serial",
+      "hook_sha256": null
+    }
+  ],
   "dependencies": []
 }
