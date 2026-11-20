@@ -31,6 +31,7 @@ function PriceChart({ t }) {
 function replyText(run) {
   const hi = run.shared_by ? `Hey ${run.shared_by}! ` : 'Hey! ';
   const item = run.product_title ?? 'je product';
+  if (run.status === 'cart_filled' && !(Number(run.saving) > 0)) return `${hi}Mijn agent heeft alle landenwinkels van het merk zelf nagekeken voor "${item}". Beste plek om te kopen: ${run.chosen_store}, ${eur(run.best_price)} geleverd in België. Winkelmandje staat al klaar, je moet enkel nog betalen: ${run.cart_url}`;
   if (run.status === 'cart_filled') return `${hi}Mijn agent heeft je link nagekeken. "${item}" kost ${eur(run.source_price)} bij ${run.source_store}, maar bij ${run.chosen_store} (zelfde merk, zelfde product) is het ${eur(run.best_price)} geleverd in België. Dat scheelt ${eur(run.saving)}. Winkelmandje staat al klaar, je moet enkel nog betalen: ${run.cart_url}`;
   if (run.status === 'refused') return `${hi}Mijn agent heeft je link nagekeken in alle landenwinkels van het merk. "${item}" voor ${eur(run.source_price)} bij ${run.source_store} is al de beste keuze: nergens anders is het minstens 5 euro goedkoper mét levering naar België. Gewoon daar kopen dus.`;
   if (run.status === 'waiting') return `${hi}Mijn agent houdt "${item}" voor je in de gaten. Beste prijs nu is ${eur(run.best_price)}, hij vult zelf een winkelmandje zodra het onder ${eur(run.target)} zakt.`;
@@ -73,7 +74,7 @@ export default function Home() {
       {tot && <div className="counter"><b>{tot.links}</b> links checked{Number(tot.people) > 0 && <> for <b>{tot.people}</b> people</>} · cheaper next door on <b>{tot.helped}</b> of them · <b>{eur(tot.saved)}</b> found</div>}
       <header><h1>Country Switch</h1><span className="tag">Same shop, same product, cheaper next door. It fills the cart or refuses, and shows why.</span></header>
       <div className="share">
-        <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Share a product link (no chat, the agent does the rest)" onKeyDown={(e) => e.key === 'Enter' && share()} />
+        <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Share a product link from any shop, or just name the product" onKeyDown={(e) => e.key === 'Enter' && share()} />
         <input className="small" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="buy under € (optional)" inputMode="decimal" />
         <input className="small" value={from} onChange={(e) => setFrom(e.target.value)} placeholder="from (optional)" />
         <button disabled={busy} onClick={() => share()}>{busy ? 'Starting…' : target ? 'Place standing order' : 'Share link'}</button>
@@ -107,8 +108,9 @@ export default function Home() {
           {!run && <div className="empty">Share a product link to start a run.</div>}
           {run && (<>
             <div className={'verdict ' + (CLS[run.status] ?? '')}>
-              <div className="big">{run.status === 'running' ? 'Working on it…' : run.status === 'cart_filled' ? `Cart filled at ${run.chosen_store}. You save ${eur(run.saving)}.` : run.status === 'refused' ? 'Refused: no switch.' : run.status === 'waiting' ? `Not yet. Watching for under ${eur(run.target)}.` : run.status === 'cannot_help' ? 'Cannot help with this link.' : 'Run failed'}</div>
+              <div className="big">{run.status === 'running' ? 'Working on it…' : run.status === 'cart_filled' ? (Number(run.saving) > 0 ? `Cart filled at ${run.chosen_store}. You save ${eur(run.saving)}.` : `Cart filled at ${run.chosen_store}: the best brand shop for you.`) : run.status === 'refused' ? 'Refused: no switch.' : run.status === 'waiting' ? `Not yet. Watching for under ${eur(run.target)}.` : run.status === 'cannot_help' ? 'Cannot help with this link.' : 'Run failed'}</div>
               <div>{run.product_title} {run.sku ? `· SKU ${run.sku}` : ''} {run.source_price ? `· ${eur(run.source_price)} at ${run.source_store}` : ''}</div>
+              {run.summary?.via && <div className="hint" style={{ margin: '6px 0 0' }}>You shared {run.summary.via.shared === 'product name' ? `the name “${run.summary.via.query}”` : `a ${run.summary.via.shared} link`}. The agent traced it to the brand's own shop, {run.summary.via.brand_shop}, and ignored {run.summary.via.ignored.length} other sellers (rule 8).</div>}
               {run.status !== 'running' && <div style={{ marginTop: 8 }}>{run.verdict}</div>}
               <div className="row">
                 {run.cart_url && <a className="btn" href={run.cart_url} target="_blank" rel="noreferrer">Open the filled cart · {eur(run.best_price)}</a>}

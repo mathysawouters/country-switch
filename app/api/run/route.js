@@ -3,7 +3,7 @@ import { startRun, createWatch } from '@/lib/agent.mjs';
 // With a target price it becomes a standing order that the server keeps re-checking.
 async function go(url, { gate, target, from } = {}) {
   url = (url || '').trim();
-  if (!/^https?:\/\/[^/\s]+\//.test(url)) return Response.json({ error: 'Send a product link' }, { status: 400 });
+  if (url.length < 4) return Response.json({ error: 'Send a product link or a product name' }, { status: 400 });
   const t = target != null && target !== '' && !Number.isNaN(Number(target)) ? Number(target) : null;
   const watchId = t != null ? await createWatch(url, t, from) : null;
   const { id } = await startRun(url, { forceGate: gate === 'on' ? true : gate === 'off' ? false : undefined, target: t, watchId, sharedBy: from });

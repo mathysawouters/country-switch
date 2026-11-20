@@ -1,0 +1,2 @@
+const r = await fetch(`${process.env.SENSO_BASE_URL}/org/kb/raw`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-API-Key': process.env.SENSO_API_KEY }, body: JSON.stringify({ title: 'My shopping rules: trust (Country Switch)', text: "Rule 8 (trust): Only buy from the brand's own official webshop. Never buy from an unknown reseller or a shop that only uses the brand's name, however cheap it is." }) });
+console.log('senso', r.status);
