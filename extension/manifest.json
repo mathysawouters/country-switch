@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Country Switch for Amazon",
+  "version": "0.1.0",
+  "description": "On an Amazon product page, checks the same item (same ASIN) on Amazon in the neighbouring countries, in your own browser, and sends the result to your Country Switch agent.",
+  "permissions": [],
+  "host_permissions": ["https://www.amazon.com.be/*", "https://www.amazon.de/*", "https://www.amazon.nl/*", "https://www.amazon.fr/*", "http://localhost:3311/*"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [{ "matches": ["https://www.amazon.com.be/*", "https://www.amazon.de/*", "https://www.amazon.nl/*", "https://www.amazon.fr/*"], "js": ["content.js"], "run_at": "document_idle" }]
+}
