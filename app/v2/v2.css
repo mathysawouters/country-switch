@@ -271,3 +271,25 @@
 .v2 .s-ruleedit textarea { width: 100%; background: #0b0d0c; color: #f2f4f3; border: 1px solid var(--line); border-radius: 10px; padding: 12px; font: 13px/1.5 var(--font-geist-mono), monospace; resize: vertical; }
 .v2 .s-rulebar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; } .v2 .s-rulebar small { color: var(--mute); }
 .v2 .s-ghost { background: transparent; color: #f2f4f3; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; } .v2 .s-ghost:hover { border-color: #2fe07a; color: #2fe07a; }
+
+/* Result card, restrained: no gradients, no glow, no pills. Numbers in one size; only the saving is green. */
+.v2 .s-hero, .v2 .s-hero.t-ok, .v2 .s-hero.t-no { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 26px 28px; }
+.v2 .s-hero.t-ok { border-left: 3px solid var(--go); } .v2 .s-hero.t-no { border-left: 3px solid var(--no); }
+.v2 .s-hero-top { gap: 24px; align-items: flex-start; }
+.v2 .s-hero-top img, .v2 .s-hero-top .s-img { width: 132px !important; height: 132px !important; border-radius: 10px; }
+.v2 .s-kicker { font-size: 12px; font-weight: 700; letter-spacing: .1em; }
+.v2 .s-ptitle { font-size: 22px; font-weight: 650; letter-spacing: -0.01em; margin-top: 6px; }
+.v2 .s-pmeta { font-size: 14px; }
+.v2 .s-cmp { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 20px; border-top: 1px solid var(--line); }
+.v2 .s-cmp > div { padding: 14px 20px 2px 0; display: flex; flex-direction: column; min-width: 0; }
+.v2 .s-cmp > div + div { padding-left: 20px; border-left: 1px solid var(--line); }
+.v2 .s-cmp small { color: var(--mute); font-size: 12px; text-transform: uppercase; letter-spacing: .07em; }
+.v2 .s-cmp b { font-size: 30px; font-weight: 650; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-top: 6px; line-height: 1.15; }
+.v2 .s-cmp b.was { color: var(--mute); text-decoration: line-through; text-decoration-thickness: 1px; font-weight: 500; }
+.v2 .s-cmp b.go { color: var(--go); }
+.v2 .s-cmp span { color: var(--mute); font-size: 14px; margin-top: 4px; overflow-wrap: anywhere; }
+.v2 .s-verdict { margin-top: 18px; font-size: 15px; line-height: 1.5; color: var(--mute); max-width: 900px; }
+.v2 .s-actions { margin-top: 18px; }
+.v2 .s-btn.go { background: #f2f4f3; color: #0b0d0c; border-radius: 10px; font-weight: 650; box-shadow: none; }
+.v2 .s-btn.go:hover { background: #fff; }
+@media (max-width: 760px) { .v2 .s-cmp { grid-template-columns: 1fr; } .v2 .s-cmp > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); } }

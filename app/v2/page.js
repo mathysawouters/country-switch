@@ -58,16 +58,15 @@ function Hero({ run, flagOf }) {
           <div className="s-ptitle">{nice(run)}</div>
           {(run.sku || run.source_store) && <div className="s-pmeta">{run.sku ? `SKU ${run.sku}` : ''}{run.sku && run.source_store ? ' · ' : ''}{run.source_store ? `shared from ${flagOf(run.source_store)} ${run.source_store}` : ''}{run.shared_by ? ` · for ${run.shared_by}` : ''}</div>}
           {filled && saved && (
-            <div className="s-story">
-              <div className="s-leg"><span className="s-was">{eur(run.source_price)}</span><small>{flagOf(run.source_store)} {run.source_store}</small></div>
-              <span className="s-arrow" aria-hidden="true">→</span>
-              <div className="s-leg"><span className="s-now">{eur(run.best_price)}</span><small>{flagOf(run.chosen_store)} {run.chosen_store}, delivered</small></div>
-              <div className="s-save">You save <b>{eur(run.saving)}</b></div>
+            <div className="s-cmp">
+              <div><small>Where you were</small><b className="was">{eur(run.source_price)}</b><span>{flagOf(run.source_store)} {run.source_store}</span></div>
+              <div><small>Where the agent filled the cart</small><b>{eur(run.best_price)}</b><span>{flagOf(run.chosen_store)} {run.chosen_store}, delivered</span></div>
+              <div><small>You save</small><b className="go">{eur(run.saving)}</b><span>{Number(run.source_price) > 0 ? Math.round((Number(run.saving) / Number(run.source_price)) * 100) + '% less, same item' : 'same item'}</span></div>
             </div>)}
           {filled && !saved && (
-            <div className="s-story">
-              <div className="s-leg"><span className="s-now">{eur(run.best_price)}</span><small>{flagOf(run.chosen_store)} {run.chosen_store}, delivered</small></div>
-              <div className="s-save">Best brand shop for you</div>
+            <div className="s-cmp">
+              <div><small>Where the agent filled the cart</small><b>{eur(run.best_price)}</b><span>{flagOf(run.chosen_store)} {run.chosen_store}, delivered</span></div>
+              <div><small>Why there</small><span style={{ marginTop: 8 }}>Best total among the brand's own shops that pass your rules</span></div>
             </div>)}
           {st === 'refused' && (<><div className="s-headline">{h.title}</div>
             {run.source_price && <div className="s-story"><div className="s-leg"><span className="s-now plain">{eur(run.source_price)}</span><small>{flagOf(run.source_store)} {run.source_store} is already the best deal</small></div></div>}</>)}
@@ -85,7 +84,7 @@ function Hero({ run, flagOf }) {
         <span className="s-chip">same-item check: {run.gate_same_item ? 'Superlinked (gate ON)' : 'naive (gate OFF)'}</span>
         <span className="s-chip">{flag(run.buyer_country)} buyer country {run.buyer_country}</span>
       </div>
-      {run.cart_url && <div className="s-carturl">{run.cart_url}</div>}
+      
     </section>
   );
 }
