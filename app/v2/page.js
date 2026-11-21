@@ -284,6 +284,11 @@ export default function Stage() {
               </section>)}
             </div>
 
+            {steps.some((s) => s.tool === 'cognee') && (<section className="s-card wide" style={{ marginTop: 16 }}>
+              <div className="s-card-head"><h3>Memory in Cognee: the {run.buyer_country ?? 'BE'} brain</h3><span className="s-tool cognee">cognee</span></div>
+              {steps.filter((s) => s.tool === 'cognee').map((s, i) => <div className="s-memo" key={i}>{s.summary}<small>{s.action === 'recall' ? 'Asked before the run' : s.action === 'memory_hit' ? 'Used during the run: one lookup skipped' : 'Stored after the run, for the next one'}</small></div>)}
+            </section>)}
+
             {others.length > 0 && (<details className="s-fold">
               <summary><b>{others.length}</b>&nbsp;other {others.length === 1 ? 'listing was' : 'listings were'} not the same item (bundles, other models)</summary>
               <ul className="s-others">{others.map((o, i) => (
