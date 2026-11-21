@@ -17,6 +17,13 @@ export async function POST(req) {
   const { id, done } = await startRun(input, { country, postal, sharedBy: b.session ? `sim:${String(b.session).slice(0, 40)}` : undefined });
   await done;
   const [r] = await rows('SELECT status, verdict, cart_url, chosen_store, best_price, saving, buyer_country FROM cs_runs WHERE id = ?', [id]);
-  const head = r.status === 'cart_filled' ? `I filled a cart for you at ${r.chosen_store}.` : r.status === 'refused' ? 'I did not fill a cart.' : r.status === 'cannot_help' ? 'I cannot help with this one.' : 'Something went wrong.';
-  return Response.json({ reply: `${head} ${r.verdict ?? ''}${r.cart_url ? ` Cart: ${r.cart_url}` : ''} (run ${id}, buyer country ${r.buyer_country ?? 'unknown'})`, run_id: id, status: r.status, cart_url: r.cart_url, saving: r.saving, buyer_country: r.buyer_country });
+  // One clear outcome, in the agent's own voice. The stored verdict quotes the shopper's rule in the first person, which reads wrong in a chat.
+  const v = String(r.verdict ?? '').replace(/\s*Rule 6 \(authority\):[\s\S]*$/, '').replace(/\s*\(the cheapest,[^)]*\)/, '').trim();
+  const cc = r.buyer_country ?? 'unknown';
+  const reply = r.status === 'cart_filled'
+    ? `${v} You pay yourself in the shop's own checkout. I never pay. Cart link: ${r.cart_url ?? 'not available'} (buyer country ${cc}, run ${id})`
+    : r.status === 'refused' || r.status === 'cannot_help'
+      ? `No cart was filled. ${v} (buyer country ${cc}, run ${id})`
+      : `No cart was filled: something went wrong on my side. (buyer country ${cc}, run ${id})`;
+  return Response.json({ reply, run_id: id, status: r.status, cart_url: r.cart_url, saving: r.saving, buyer_country: r.buyer_country });
 }

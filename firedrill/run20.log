@@ -1,0 +1,32 @@
+BATCH 1 world 882b0997-22fa-4566-8514-edd5bcafa408 plan 6bf38ae9-fce4-4f50-aab6-4a77a7310a0a err None
+APPLY tail :0,"state":"allocating","created_at":"2026-11-21T01:37:47.298613Z","updated_at":"2026-11-21T01:37:47.298632Z","target_work_complete":false,"target_dispatch_complete":false,"descriptor_digest":"5471af73532d2f973965c305443549b371f30e972272d0ab681721d15807a7b1","scenario_count":5,"repetitions":1,"max_parallel":1,"reset":"per_drill","operation_id":"ac542431-9d9b-44c2-9407-243e568ec655","next_command":"firedrill run --plan <path> --descriptor <path> --campaign 29480e7f-dfac-4007-b6aa-7cd8860d463c"}}  campaign 29480e7f-dfac-4007-b6aa-7cd8860d463c
+RUN tail e":"native_target_dispatch_complete","data":{"campaign_id":"29480e7f-dfac-4007-b6aa-7cd8860d463c"}} {"type":"native_companion_stopping","data":{"reason":"stopped"}} {"type":"native_companion_stopped","data":{"session_id":"6686cd2e-471d-42db-b3d4-40c4b3c4fce3","ended":"stopped","error_code":null,"drills":{"completed":5,"failed":0,"cancelled":0,"incomplete":0,"declined":0,"evidence_incomplete":0}}} 
+Campaign 29480e7f-dfac-4007-b6aa-7cd8860d463c: running
+Drills: 5 of 5 allocated (5 scenarios x 1 repetitions, up to 1 in parallel, reset per_drill)
+Drill states: 5 draining
+Results: none
+  #1 rep 1  draining  drill 4d0fd0bc-b8b8-4498-8e15-c7e98d2d51e4  draining
+  #2 rep 1  draining  drill c52f1593-8253-4e42-927d-7abf9b34ce7b  draining
+  #3 rep 1  draining  drill 30969c4b-bcc3-4397-80fa-f5aee3990c9b  draining
+  #4 rep 1  draining  drill 94f382e8-9913-4243-a40f-fbbe13b7a6b4  draining
+  #5 rep 1  draining  drill dc5bfe5e-6194-4b5e-b4c4-db4a214335d7  draining
+Quality by criterion across drills (each compatible cohort on its own):
+  Country Switch acts by the rules  average 84.9 (lowest 78.5, highest 94.5) over 4 scored drills; threshold 75: 4 met, 0 below threshold
+Each criterion is scored 0-100 against its own threshold. Campaign figures are per criterion and per compatible cohort, never co
+BATCH 2 world 2bc48b9f-f20b-4a1b-b129-eff33e7ceba5 plan d2f93164-198b-4993-ba5a-fe0eeb5d545b err None
+APPLY tail :0,"state":"allocating","created_at":"2026-11-21T01:42:51.842222Z","updated_at":"2026-11-21T01:42:51.842237Z","target_work_complete":false,"target_dispatch_complete":false,"descriptor_digest":"5471af73532d2f973965c305443549b371f30e972272d0ab681721d15807a7b1","scenario_count":5,"repetitions":1,"max_parallel":1,"reset":"per_drill","operation_id":"124a06e0-91c8-4920-a2be-42972cec88c4","next_command":"firedrill run --plan <path> --descriptor <path> --campaign aa3d9090-cc56-4c19-88c4-3c351da68c1a"}}  campaign aa3d9090-cc56-4c19-88c4-3c351da68c1a
+RUN tail e":"native_target_dispatch_complete","data":{"campaign_id":"aa3d9090-cc56-4c19-88c4-3c351da68c1a"}} {"type":"native_companion_stopping","data":{"reason":"stopped"}} {"type":"native_companion_stopped","data":{"session_id":"6686cd2e-471d-42db-b3d4-40c4b3c4fce3","ended":"stopped","error_code":null,"drills":{"completed":5,"failed":0,"cancelled":0,"incomplete":0,"declined":0,"evidence_incomplete":0}}} 
+Campaign aa3d9090-cc56-4c19-88c4-3c351da68c1a: running
+Drills: 5 of 5 allocated (5 scenarios x 1 repetitions, up to 1 in parallel, reset per_drill)
+Drill states: 5 draining
+Results: none
+  #1 rep 1  draining  drill 2888a7fa-47ad-4afb-848a-43a0c1442dfd  draining
+  #2 rep 1  draining  drill f4d3f41c-71ed-425c-9ed1-5430ec3f07cc  draining
+  #3 rep 1  draining  drill b059045f-b6a4-420f-b601-730da3ac51de  draining
+  #4 rep 1  draining  drill f789f4ef-2269-460b-a621-2889ae0c70a3  draining
+  #5 rep 1  draining  drill d9395ee6-b290-4803-9d78-3a7ec452cc76  draining
+Quality by criterion across drills (each compatible cohort on its own):
+  Country Switch acts by the rules  average 94.7 (lowest 93.8, highest 95.5) over 4 scored drills; threshold 75: 4 met, 0 below threshold
+Each criterion is scored 0-100 against its own threshold. Campaign figures are per criterion and per compatible cohort, never co
+BATCH 3 world a7213c89-0564-4c5b-a149-8285d2d7935e plan 848ec9f7-0acb-4a60-abcc-8ba77012b078 err None
+APPLY tail :0,"state":"allocating","created_at":"2026-11-21T01:46:58.470787Z","updated_at":"2026-11-21T01:46:58.470810Z","target_work_complete":false,"target_dispatch_complete":false,"descriptor_digest":"5471af73532d2f973965c305443549b371f30e972272d0ab681721d15807a7b1","scenario_count":5,"repetitions":1,"max_parallel":1,"reset":"per_drill","operation_id":"3b75bf12-8c00-4a4f-b669-550f5642bbda","next_command":"firedrill run --plan <path> --descriptor <path> --campaign 0ff972e4-f35c-4353-b109-eeeef2bacab5"}}  campaign 0ff972e4-f35c-4353-b109-eeeef2bacab5
